@@ -6,6 +6,9 @@ import (
 )
 
 func main() {
+	ashufd:="asdfg"
+	fmt.Println(ashufd[3:4])
+
 	time1:=time.Now()
 	timenows:=time.NewTicker(2*time.Second)
 	<-timenows.C
