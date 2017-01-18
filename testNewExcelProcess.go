@@ -37,6 +37,7 @@ func main() {
 	row=sheet.AddRow()
 	cell=row.AddCell()
 	cell.Value="asdfsadf"
+	fmt.Println(len(sheet.Rows))
 	err = file.Save("./MyXLSXFile.xlsx")
 	if err != nil {
 		fmt.Printf(err.Error())
