@@ -41,8 +41,8 @@ func main() {
 		Ip_1: 192,
 		Ip_2: 168,
 		Ip_3: 0,
-		Ip_4: 3,
-		Bits: 44,
+		Ip_4: 0,
+		Bits: 32,
 	}
 	model, err := calNBFL(*nwip)
 	if err != nil {
