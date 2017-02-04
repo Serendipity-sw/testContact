@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	aesMob,err:=AesEncrypt("18551734732")
+	aesMob,err:=AesEncrypt("gloomysw_sw")
 	if err != nil {
 		fmt.Printf("aes err! err: %s \n",err.Error())
 		return
