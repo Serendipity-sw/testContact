@@ -15,12 +15,6 @@ func main() {
 	jsonasdf,_:=json.Marshal(model)
 	fmt.Println(string(jsonasdf))
 
-	model=append(model,&nameObj{
-		Name:"nihao",
-	})
-	fmt.Println(model[0].Name)
-
-
 	jsonasdf,_=json.Marshal(model)
 	fmt.Println(string(jsonasdf))
 }
