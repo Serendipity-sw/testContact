@@ -49,4 +49,12 @@ func main() {
 
 	objStrByte,_:=json.Marshal(modelList)
 	fmt.Println(string(objStrByte))
+
+
+	option:=map[string]interface{}{
+		"typ":"file",
+	}
+option["log"]="./logs"
+	fmt.Println(option["typ"])
+	fmt.Println(option["log"])
 }
