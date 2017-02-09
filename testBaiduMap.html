@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=0CWwKLVyT5cX8pHWM66cqDd6"></script>
+</head>
+<style>
+    html,body{
+        width:100%;
+        height:100%;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    #r-result{
+        position: absolute;
+        top: 12px;
+        width: 301px;
+        left: 13px;
+        padding: 0;
+        margin: 0;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        border: 0;
+    }
+</style>
+<body>
+<div class="mapArea" id="mapArea" style="height: 100%"></div>
+<div id="r-result"></div>
+</body>
+<script>
+    //实例化地图装载对象
+    var map = new BMap.Map("mapArea");
+    //设置初始化后地图定位位置
+    map.centerAndZoom("南京",11)
+    //地图拖拽
+    map.enableScrollWheelZoom(true);
+    var local = new BMap.LocalSearch(map, {
+        renderOptions:{map: map,panel: "r-result"},
+        onMarkersSet:function (markArray) {
+            for (var i=0;i<markArray.length;i++){
+                markArray[i].marker.enableDragging();
+                markArray[i].marker.addEventListener("click",function(e){
+                    var p = e.target;
+                    alert("marker的位置是" + p.getPosition().lng + "," + p.getPosition().lat);
+                });
+            }
+        }
+    });
+  local.search("夫子庙阿萨德法师打发");
+    map.addEventListener("click", function (e) {
+        var marker = new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat)); // 创建点
+        marker.addEventListener("click",function (e) {
+            var p = marker.getPosition();  //获取marker的位置
+            alert("marker的位置是" + p.lng + "," + p.lat);
+        });
+        map.addOverlay(marker);    //增加点
+    });
+</script>
+</html>
