@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	_ "github.com/lib/pq"
 	"fmt"
-	"axon"
 )
 
 func main() {
@@ -30,6 +29,5 @@ func main() {
 		}
 	}
 	rows.Close()
-	phone=axon.AxonDecrypt(phone)
 	fmt.Println(phone)
 }
