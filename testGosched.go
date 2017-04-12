@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 	//"log"
+	"sync"
 )
 
 func fib(x int) int {
@@ -27,6 +28,39 @@ func spinner(delay time.Duration) {
 var tokens = make(chan struct{}, 20)
 
 func main() {
+	var (
+		threadLock sync.WaitGroup
+		ch         = make(chan []string, 3)
+	)
+	threadLock.Add(3)
+	//threadLock.Add(3)
+	go func(ch chan []string) {
+		time.Sleep(3 * time.Second)
+		ch <- []string{"1", "3"}
+		threadLock.Done()
+		//threadLock.Done()
+	}(ch)
+	go func(ch chan []string) {
+		time.Sleep(12 * time.Second)
+		ch <- []string{"4", "3"}
+		threadLock.Done()
+		//threadLock.Done()
+	}(ch)
+	go func(ch chan []string) {
+		time.Sleep(7 * time.Second)
+		ch <- []string{"7", "3"}
+		threadLock.Done()
+		//threadLock.Done()
+	}(ch)
+	threadLock.Wait()
+	close(ch)
+	for value := range ch {
+		fmt.Println(value)
+	}
+
+	fmt.Println(55)
+
+	return
 	worklist := make(chan []string)
 	var n int // number of pending sends to worklist
 
