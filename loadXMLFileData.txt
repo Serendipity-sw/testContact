@@ -1,0 +1,1 @@
+load XML local infile '%s' into table pdc_store.m_business_order_%s ROWS IDENTIFIED BY '<loadFile>'
