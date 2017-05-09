@@ -4,64 +4,41 @@ import (
 	"fmt"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/agent"
+	"net"
+	"os"
 )
 
 func main() {
-	conn, err := sshConntion()
+	var auths []ssh.AuthMethod
+	if aconn, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK")); err == nil {
+		auths = append(auths, ssh.PublicKeysCallback(agent.NewClient(aconn).Signers))
+	}
+	auths = append(auths, ssh.Password(""))
+	addr := fmt.Sprintf("%s:%d", "", 22)
+	config := ssh.ClientConfig{
+		User:            "root",
+		Auth:            auths,
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+	}
+	conn, err := ssh.Dial("tcp", addr, &config)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Printf("Dial run err! err: %s \n", err.Error())
 		return
 	}
-	//var conn *ssh.Client
-	// open an SFTP session over an existing ssh connection.
-	sftp, err := sftp.NewClient(conn)
+	defer conn.Close()
+	c, err := sftp.NewClient(conn, sftp.MaxPacket(1<<15))
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Printf("NewClient run err! err: %s \n", err.Error())
 		return
 	}
-	defer sftp.Close()
-
-	// walk a directory
-	w := sftp.Walk("/apps")
-	for w.Step() {
-		if w.Err() != nil {
-			continue
-		}
-		fmt.Println(w.Path())
-	}
-
-	// leave your mark
-	f, err := sftp.Create("hello")
+	files, err := c.ReadDir("/apps/service")
 	if err != nil {
-		fmt.Println(err)
-	}
-	if _, err := f.Write([]byte("Hello world!")); err != nil {
-		fmt.Println(err)
-	}
-
-	// check it's there
-	fi, err := sftp.Lstat("hello")
-	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("ReadDir run err! err: %s \n", err.Error())
 		return
 	}
-	fmt.Println(fi)
-}
-
-func sshConntion() (*ssh.Client, error) {
-	var hostKey ssh.PublicKey
-	config := &ssh.ClientConfig{
-		User: "root",
-		Auth: []ssh.AuthMethod{
-			ssh.Password("Axon@2016"),
-		},
-		HostKeyCallback: ssh.FixedHostKey(hostKey),
+	for _, value := range files {
+		fmt.Println(value.Name())
 	}
-	// Dial your ssh server.
-	conn, err := ssh.Dial("tcp", "10.10.141.71:22", config)
-	if err != nil {
-		fmt.Println("unable to connect: ", err)
-		return nil, err
-	}
-	return conn, err
+	c.Close()
 }
